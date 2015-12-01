@@ -7,6 +7,9 @@ import (
 )
 
 func newMongo() *mgo.Session {
+	if len(*config.FLAG_MONGO_ADDR) <= 0 {
+		return nil
+	}
 	session, err := mgo.Dial(*config.FLAG_MONGO_ADDR)
 	if err != nil {
 		fmt.Println("Invalid mongo address")

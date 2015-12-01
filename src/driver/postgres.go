@@ -9,6 +9,9 @@ import (
 )
 
 func newPostgres() *sql.DB {
+	if len(*config.FLAG_POSTGRES_DRIVER) <= 0 {
+		return nil
+	}
 	db, err := sql.Open(*config.FLAG_POSTGRES_DRIVER, strings.Replace(*config.FLAG_POSTGRES_SOURCE, ":", "=", -1))
 	if err != nil {
 		fmt.Println("Postgres open failed!")
