@@ -1,2 +1,2 @@
 # mornsail
-a little server architecture, just for play
+This is a little server architecture, just for play
