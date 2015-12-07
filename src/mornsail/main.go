@@ -4,11 +4,13 @@ import (
 	"config"
 	"console"
 	//"flag"
-	//"fmt"
 	//	"glog"
 	"golog"
 	//"path"
+	"os"
+	"os/signal"
 	"servlet"
+	"syscall"
 	"time"
 	//"timer"
 )
@@ -24,5 +26,21 @@ func main() {
 	//golog.SetLevel(golog.LevelDebug)
 	golog.Info("main", "main", "Starting server", "addr", *config.FLAG_ADDR)
 
-	time.Sleep(time.Second * 10000000)
+	c := make(chan os.Signal, 1)
+	signal.Notify(c,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT,
+		syscall.SIGKILL)
+	//	signal.Notify(c, os.Interrupt, os.Kill)
+
+	sig := <-c
+	golog.Info("main", "main", "Server begin close", "sig", sig)
+
+	golog.Info("main", "main", "Closing server module ...")
+	srvModule.Close()
+
+	golog.Info("main", "main", "Server close success")
+	time.Sleep(time.Second)
 }
