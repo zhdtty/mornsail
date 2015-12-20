@@ -7,7 +7,11 @@ import (
 	_ "net/http/pprof"
 	//	"runtime/pprof"
 	"driver"
+	"github.com/coocood/jas"
 	"io"
+	"crypto/sha1"
+	"sort"
+	"reflect"
 )
 
 func Init() {
@@ -15,10 +19,78 @@ func Init() {
 	go webUI()
 }
 
+func sha1s(s string) string {
+        h := sha1.New()
+        h.Write([]byte(s))
+        return fmt.Sprintf("%x", h.Sum(nil))
+}
+
 func redisHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 
 	io.WriteString(w, fmt.Sprintf("Cur redis actives : %d", driver.RedisPool.ActiveCount()))
+}
+
+type Hello struct{}
+
+func (*Hello) GetWorld(ctx *jas.Context) { // `GET /v1/hello`
+	ctx.Data = "hello world"
+	//response: `{"data":"hello world","error":null}`
+}
+
+func (*Hello) PostCity(ctx *jas.Context) {
+	name := ctx.RequireString("name")
+	//	age := ctx.RequirePositiveInt("age")
+	//	grade, err := ctx.FindPositiveInt("grade")
+
+	ctx.Data = "name:" + name
+	// 6, 60 is the min and max length, error message can be "passwordTooShort" or "passwordTooLong"
+	//	password := ctx.RequireStringLen(6, 60, "password")
+
+	// emailRegexp is a *regexp.Regexp instance.error message would be "emailInvalid"
+	//	email := ctx.RequireStringMatch(emailRegexp, "email")
+}
+
+type Hi struct{}
+
+func (*Hi) GetPerson(ctx *jas.Context) {
+}
+
+func (*Hi) PutBody(ctx *jas.Context) {
+}
+
+type Weixin struct{}
+
+func (*Weixin) Get(ctx *jas.Context) {
+        fmt.Println("Get weixin")
+	echostr := ctx.RequireString("echostr")
+	nonce := ctx.RequireString("nonce")
+	timestamp := ctx.RequireString("timestamp")
+	sig := ctx.RequireString("signature")
+
+	token := "test"
+
+	params := []string{nonce, timestamp, token}
+	sort.Sort(sort.StringSlice(params))
+	data := ""
+	for _,v := range params {
+	    data += v
+	}
+	sha1Sig := string(sha1s(data))
+
+	fmt.Println("echostr:", echostr, "nonce:", nonce, "timestamp:", timestamp, "sig:", sig)
+	fmt.Println("sha1str:", data)
+	fmt.Println("sha1sig:", sha1Sig)
+
+	ctx.Data = echostr
+	if sig == sha1Sig {
+	   cfg := &jas.Config{}
+	   cfg.HijackWrite = func(writer io.Writer, ctx *jas.Context) int {
+	         len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
+		 return len
+	   }
+	   ctx.SetConfig(cfg)
+	}
 }
 
 /*
@@ -101,7 +173,14 @@ func webUI() {
 		http.HandleFunc("/block", blockHandler)
 	*/
 	http.HandleFunc("/redis", redisHandle)
-	err := http.ListenAndServe(":5555", nil)
+
+	router := jas.NewRouter(new(Hello), new(Hi), new(Weixin))
+	router.BasePath = "/"
+	fmt.Println(router.HandledPaths(true))
+	//output: `GET /v1/hello`
+	http.Handle(router.BasePath, router)
+
+	err := http.ListenAndServe(":80", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
