@@ -11,7 +11,7 @@ import (
 	"os/signal"
 	"servlet"
 	"syscall"
-	"time"
+	//"time"
 	//"timer"
 )
 
@@ -42,5 +42,4 @@ func main() {
 	srvModule.Close()
 
 	golog.Info("main", "main", "Server close success")
-	time.Sleep(time.Second)
 }

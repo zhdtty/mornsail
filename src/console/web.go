@@ -6,12 +6,12 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	//	"runtime/pprof"
+	"crypto/sha1"
 	"driver"
 	"github.com/coocood/jas"
 	"io"
-	"crypto/sha1"
-	"sort"
 	"reflect"
+	"sort"
 )
 
 func Init() {
@@ -20,9 +20,9 @@ func Init() {
 }
 
 func sha1s(s string) string {
-        h := sha1.New()
-        h.Write([]byte(s))
-        return fmt.Sprintf("%x", h.Sum(nil))
+	h := sha1.New()
+	h.Write([]byte(s))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func redisHandle(w http.ResponseWriter, r *http.Request) {
@@ -34,35 +34,24 @@ func redisHandle(w http.ResponseWriter, r *http.Request) {
 type Hello struct{}
 
 func (*Hello) GetWorld(ctx *jas.Context) { // `GET /v1/hello`
-	ctx.Data = "hello world"
+	var req WeixinTokenRequest
+	_ = DoToken(req)
+	ctx.Data = ACCESS_TOKEN
 	//response: `{"data":"hello world","error":null}`
 }
 
-func (*Hello) PostCity(ctx *jas.Context) {
-	name := ctx.RequireString("name")
-	//	age := ctx.RequirePositiveInt("age")
-	//	grade, err := ctx.FindPositiveInt("grade")
-
-	ctx.Data = "name:" + name
-	// 6, 60 is the min and max length, error message can be "passwordTooShort" or "passwordTooLong"
-	//	password := ctx.RequireStringLen(6, 60, "password")
-
-	// emailRegexp is a *regexp.Regexp instance.error message would be "emailInvalid"
-	//	email := ctx.RequireStringMatch(emailRegexp, "email")
-}
-
-type Hi struct{}
-
-func (*Hi) GetPerson(ctx *jas.Context) {
-}
-
-func (*Hi) PutBody(ctx *jas.Context) {
+func (*Hello) GetTuling(ctx *jas.Context) {
+     var req TulingRequest
+     req.Info = "新闻"
+     resp := DoTulingQuery(req)
+     resp.Print()
+     ctx.Data = "success"
 }
 
 type Weixin struct{}
 
 func (*Weixin) Get(ctx *jas.Context) {
-        fmt.Println("Get weixin")
+	fmt.Println("Get weixin")
 	echostr := ctx.RequireString("echostr")
 	nonce := ctx.RequireString("nonce")
 	timestamp := ctx.RequireString("timestamp")
@@ -73,8 +62,8 @@ func (*Weixin) Get(ctx *jas.Context) {
 	params := []string{nonce, timestamp, token}
 	sort.Sort(sort.StringSlice(params))
 	data := ""
-	for _,v := range params {
-	    data += v
+	for _, v := range params {
+		data += v
 	}
 	sha1Sig := string(sha1s(data))
 
@@ -84,13 +73,44 @@ func (*Weixin) Get(ctx *jas.Context) {
 
 	ctx.Data = echostr
 	if sig == sha1Sig {
-	   cfg := &jas.Config{}
-	   cfg.HijackWrite = func(writer io.Writer, ctx *jas.Context) int {
-	         len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
-		 return len
-	   }
-	   ctx.SetConfig(cfg)
+		cfg := &jas.Config{}
+		cfg.HijackWrite = func(writer io.Writer, ctx *jas.Context) int {
+			len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
+			return len
+		}
+		ctx.SetConfig(cfg)
 	}
+}
+
+func (*Weixin) Post(ctx *jas.Context) {
+	fmt.Println("Post weixin msg")
+	b := make([]byte, 2048)
+	_, _ = ctx.Body.Read(b)
+	//	fmt.Println("body:",string(b))
+	//	fmt.Println("len:", n)
+
+	var msg WeixinMsg
+	msg.ParseMsg(b)
+	msg.Print()
+
+	switch msg.
+	var msgResp WeixinMsgTextResponse
+	msgResp.ToUserName = "o6OKFxDhoecsCZzIMxCerGwpQE9c"
+	msgResp.FromUserName = "gh_5b1770a0f8f4"
+	msgResp.CreateTime = msg.CreateTime
+	msgResp.MsgType = msg.MsgType
+	msgResp.Content = "你逗我玩吗"
+	rs := SerialToXML(msgResp)
+	ctx.Data = string(rs)
+	cfg := &jas.Config{}
+	cfg.HijackWrite = func(writer io.Writer, ctx *jas.Context) int {
+		len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
+		return len
+	}
+	ctx.SetConfig(cfg)
+
+	fmt.Println(ctx.Data)
+	//	ctx.Data = "Post"
 }
 
 /*
@@ -174,7 +194,7 @@ func webUI() {
 	*/
 	http.HandleFunc("/redis", redisHandle)
 
-	router := jas.NewRouter(new(Hello), new(Hi), new(Weixin))
+	router := jas.NewRouter(new(Hello), new(Weixin))
 	router.BasePath = "/"
 	fmt.Println(router.HandledPaths(true))
 	//output: `GET /v1/hello`
