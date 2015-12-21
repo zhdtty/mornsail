@@ -1,6 +1,7 @@
 #!/bin/bash
 
 rm -rf pkg
+cd src/util/ && go build && go install && cd ../..
 cd src/timer/ && go build && go install && cd ../..
 cd src/config/ && go build && go install && cd ../..
 cd src/glog/ && go build && go install && cd ../..

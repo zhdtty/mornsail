@@ -10,8 +10,8 @@ import (
 	"driver"
 	"github.com/coocood/jas"
 	"io"
-	"reflect"
-	"sort"
+	//	"reflect"
+	//	"sort"
 )
 
 func Init() {
@@ -41,13 +41,14 @@ func (*Hello) GetWorld(ctx *jas.Context) { // `GET /v1/hello`
 }
 
 func (*Hello) GetTuling(ctx *jas.Context) {
-     var req TulingRequest
-     req.Info = "新闻"
-     resp := DoTulingQuery(req)
-     resp.Print()
-     ctx.Data = "success"
+	var req TulingRequest
+	req.Info = "新闻"
+	resp := DoTulingQuery(req)
+	resp.Print()
+	ctx.Data = "success"
 }
 
+/*
 type Weixin struct{}
 
 func (*Weixin) Get(ctx *jas.Context) {
@@ -112,6 +113,7 @@ func (*Weixin) Post(ctx *jas.Context) {
 	fmt.Println(ctx.Data)
 	//	ctx.Data = "Post"
 }
+*/
 
 /*
 func goHandler(w http.ResponseWriter, r *http.Request) {

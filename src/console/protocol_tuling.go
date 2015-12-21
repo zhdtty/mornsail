@@ -70,28 +70,28 @@ type TulingFood struct {
 	DetailUrl string
 }
 type TulingData struct {
-        Article   string
-        Source    string
-        Icon      string
-        DetailUrl string
+	Article   string
+	Source    string
+	Icon      string
+	DetailUrl string
 
-        TrainNum  string
-        Start     string
-        Terminal  string
-        StartTime string
-        EndTime   string
+	TrainNum  string
+	Start     string
+	Terminal  string
+	StartTime string
+	EndTime   string
 
-        Flight    string
+	Flight string
 
-        Name      string
-        Info      string
+	Name string
+	Info string
 }
 
 type TulingResponse struct {
-	Code       int32
-	Text       string
-	Url        string
-	List  	   []TulingData
+	Code int32
+	Text string
+	Url  string
+	List []TulingData
 }
 
 func (this *TulingResponse) ParseJson(jsonObj []byte) {
@@ -101,7 +101,7 @@ func (this *TulingResponse) ParseJson(jsonObj []byte) {
 }
 
 func (this *TulingResponse) Print() {
-        fmt.Println("code:", this.Code)
+	fmt.Println("code:", this.Code)
 	fmt.Println("text:", this.Text)
 	fmt.Println("url:", this.Url)
 }
