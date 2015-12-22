@@ -150,3 +150,5 @@ func (st *ServerTimer) PrintTimers() {
 		fmt.Println("nexttime ", st.timers[i].nextTime, "interval ", st.timers[i].interval)
 	}
 }
+
+var SvrTimer *ServerTimer = NewServerTimer()

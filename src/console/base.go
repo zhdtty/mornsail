@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -19,9 +20,9 @@ var rid int = 0
 func GetUrl(address string, uinterface string, data string, https bool) bytes.Buffer {
 	var bUrl bytes.Buffer
 	if https {
-	     bUrl.WriteString("https://")
+		bUrl.WriteString("https://")
 	} else {
-	     bUrl.WriteString("http://")
+		bUrl.WriteString("http://")
 	}
 	bUrl.WriteString(address)
 	bUrl.WriteString(uinterface)
@@ -31,11 +32,11 @@ func GetUrl(address string, uinterface string, data string, https bool) bytes.Bu
 
 func GetUrlWithoutData(address string, uinterface string, https bool) bytes.Buffer {
 	var bUrl bytes.Buffer
-        if https {
-             bUrl.WriteString("https://")
-        } else {
-             bUrl.WriteString("http://")
-        }
+	if https {
+		bUrl.WriteString("https://")
+	} else {
+		bUrl.WriteString("http://")
+	}
 	bUrl.WriteString(address)
 	bUrl.WriteString(uinterface)
 	return bUrl
@@ -48,6 +49,7 @@ func RestGet(bufUrl *bytes.Buffer) []byte {
 		fmt.Println("rest get error : ", err)
 		return bErr
 	}
+	fmt.Println(res.Header)
 	resJson, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
@@ -74,6 +76,23 @@ func RestPost(bufUrl *bytes.Buffer, data url.Values) []byte {
 		return bErr
 	}
 	//        fmt.Printf("%s\r\n", resJson)
+	return resJson
+}
+
+func RestPostWithBody(bufUrl *bytes.Buffer, bodyType string, body io.Reader) []byte {
+	res, err := http.Post(bufUrl.String(), bodyType, body)
+	if err != nil {
+		var bErr []byte
+		fmt.Println("rest post error : ", err)
+		return bErr
+	}
+	resJson, err := ioutil.ReadAll(res.Body)
+	res.Body.Close()
+	if err != nil {
+		var bErr []byte
+		fmt.Println("rest read post body error : ", err)
+		return bErr
+	}
 	return resJson
 }
 

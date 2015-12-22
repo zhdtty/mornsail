@@ -12,11 +12,23 @@ import (
 	"io"
 	//	"reflect"
 	//	"sort"
+	"timer"
 )
 
 func Init() {
 	fmt.Println("console init")
 	go webUI()
+
+	var req WeixinTokenRequest
+	_ = DoToken(req)
+	var req1 BaiduTokenRequest
+	_ = DoBaiduToken(req1)
+	timer.SvrTimer.AddIntervalTimer(3600, func() {
+		var req WeixinTokenRequest
+		_ = DoToken(req)
+		var req1 BaiduTokenRequest
+		_ = DoBaiduToken(req1)
+	}, true)
 }
 
 func sha1s(s string) string {
@@ -196,7 +208,7 @@ func webUI() {
 	*/
 	http.HandleFunc("/redis", redisHandle)
 
-	router := jas.NewRouter(new(Hello), new(Weixin))
+	router := jas.NewRouter(new(Hello), new(Weixin), new(Baidu))
 	router.BasePath = "/"
 	fmt.Println(router.HandledPaths(true))
 	//output: `GET /v1/hello`

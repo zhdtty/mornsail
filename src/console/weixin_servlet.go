@@ -45,7 +45,7 @@ func (*Weixin) Post(ctx *jas.Context) {
 	b := make([]byte, 2048)
 	_, _ = ctx.Body.Read(b)
 
-	var msg WeixinMsg
+	msg := &WeixinMsg{}
 	msg.ParseMsg(b)
 	msg.Print()
 
@@ -53,9 +53,9 @@ func (*Weixin) Post(ctx *jas.Context) {
 	case "text":
 		var result string
 		if len(msg.Content) > 0 && msg.Content[0] == '@' {
-			result = string(TianxingHttpRequest(&msg))
+			result = string(TianxingHttpRequest(msg))
 		} else {
-			result = string(TulingHttpRequest(&msg))
+			result = string(TulingHttpRequest(msg))
 		}
 		ctx.Data = result
 		fmt.Println(result)
@@ -69,8 +69,15 @@ func (*Weixin) Post(ctx *jas.Context) {
 		{
 		}
 	case "voice":
-		{
+		BaiduVoiceHttpRequest(msg) //baidu http voice
+
+		ctx.Data = "success"
+		cfg := &jas.Config{}
+		cfg.HijackWrite = func(writer io.Writer, ctx *jas.Context) int {
+			len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
+			return len
 		}
+		ctx.SetConfig(cfg)
 	case "video":
 		{
 		}
