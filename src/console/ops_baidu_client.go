@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"sync"
 )
 
@@ -65,7 +66,7 @@ func DoBaiduToken(req BaiduTokenRequest) []byte {
 	return []byte(resp.Access_Token)
 }
 
-func DoBaiduVoice(req BaiduVoiceRequest) []byte {
+func DoBaiduVoice(req BaiduVoiceRequest) string {
 	//	params := req.ToRequest()
 	body := SerialToJSON(req.Vdata)
 	fmt.Println("baidu voice json :", string(body))
@@ -73,24 +74,29 @@ func DoBaiduVoice(req BaiduVoiceRequest) []byte {
 	client := &http.Client{}
 	url := "http://" + BAIDU_VOICE_ADDRESS + BAIDU_VOICE_API
 	request, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
-	request.Header.Add("Content-Type", "application/json")
-	request.Header.Add("Content-Length", fmt.Sprintf("%d", req.Vdata.Len))
+	request.Header.Set("content-type", "application/json")
+	request.Header.Set("content-length", fmt.Sprintf("%d", len(body)))
 	resp, err := client.Do(request)
 	if err != nil {
 		var bErr []byte
 		fmt.Println("rest post error : ", err)
-		return bErr
+		return string(bErr)
 	}
 	resJson, err := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
 	if err != nil {
 		var bErr []byte
 		fmt.Println("rest read post body error : ", err)
-		return bErr
+		return string(bErr)
 	}
 	var bdResp BaiduVoiceResponse
 	bdResp.ParseJson(resJson)
-	fmt.Println(string(resJson))
+	if bdResp.Err_No == 0 && len(bdResp.Result) > 0 {
+		result := bdResp.Result[0]
+		return strings.TrimSuffix(result, "，")
+	}
+	return string("")
+
 	/*
 		//	result := PostHttpRequestWithBody(BAIDU_VOICE_ADDRESS, BAIDU_VOICE_API, params, "audio/amr;rate=16000", bytes.NewBuffer(body), false)
 		result := PostHttpRequestWithBody(BAIDU_VOICE_ADDRESS, BAIDU_VOICE_API, params, "application/json", bytes.NewBuffer(body), false)
@@ -99,12 +105,11 @@ func DoBaiduVoice(req BaiduVoiceRequest) []byte {
 		fmt.Println(string(result))
 		//	_ = PostHttpRequestWithBody(BAIDU_VOICE_ADDRESS, BAIDU_VOICE_API, params, "application/json", bytes.NewBuffer(body), false)
 	*/
-	return []byte("")
 }
 
-func BaiduVoiceHttpRequest(reqMsg *WeixinMsg) {
+func BaiduVoiceHttpRequest(reqMsg *WeixinMsg) string {
 	if reqMsg.MsgType != "voice" {
-		return
+		return ""
 	}
 	var mediaReq WeixinMediaLoadRequest
 	mediaReq.MediaId = reqMsg.MediaId
@@ -119,20 +124,16 @@ func BaiduVoiceHttpRequest(reqMsg *WeixinMsg) {
 	req.Vdata.Channel = 1
 	req.Vdata.Speech = voiceStr
 	req.Vdata.Len = len(voiceData)
-	/*
-		url := "http://" + ADDRESS + WEIXIN_LOAD_MEDIA + "access_token=" + ACCESS_TOKEN + "&media_id=1" // + reqMsg.MediaId
-		req.VUrl.Url = url
-		req.VUrl.Callback = BAIDU_CALLBACK_URL
-	*/
+
 	fmt.Println("weixin access token :", ACCESS_TOKEN)
 	fmt.Println("weixin media id :", reqMsg.MediaId)
 	fmt.Println("voice data :", req.Vdata.Speech)
 	fmt.Println("voice data len :", req.Vdata.Len)
 	//	fmt.Println("callback url :", BAIDU_CALLBACK_URL)
 
-	DoBaiduVoice(req)
+	return DoBaiduVoice(req)
 
-	BDVoiceQueue.Add(reqMsg)
+	//	BDVoiceQueue.Add(reqMsg)
 }
 
 var BDVoiceQueue *VoiceQueue = NewVoiceQueue()

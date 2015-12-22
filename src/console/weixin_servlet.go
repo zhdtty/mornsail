@@ -69,9 +69,17 @@ func (*Weixin) Post(ctx *jas.Context) {
 		{
 		}
 	case "voice":
-		BaiduVoiceHttpRequest(msg) //baidu http voice
+		text := BaiduVoiceHttpRequest(msg) //baidu http voice
 
-		ctx.Data = "success"
+		if text == "" {
+			ctx.Data = "success"
+		} else {
+			msg.MsgType = "text"
+			msg.Content = text
+			var result string
+			result = string(TulingHttpRequest(msg))
+			ctx.Data = result
+		}
 		cfg := &jas.Config{}
 		cfg.HijackWrite = func(writer io.Writer, ctx *jas.Context) int {
 			len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
