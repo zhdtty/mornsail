@@ -69,7 +69,7 @@ func DoBaiduToken(req BaiduTokenRequest) []byte {
 func DoBaiduVoice(req BaiduVoiceRequest) string {
 	//	params := req.ToRequest()
 	body := SerialToJSON(req.Vdata)
-	fmt.Println("baidu voice json :", string(body))
+	fmt.Println("baidu voice request json :", string(body))
 
 	client := &http.Client{}
 	url := "http://" + BAIDU_VOICE_ADDRESS + BAIDU_VOICE_API
@@ -95,16 +95,9 @@ func DoBaiduVoice(req BaiduVoiceRequest) string {
 		result := bdResp.Result[0]
 		return strings.TrimSuffix(result, "，")
 	}
-	return string("")
+	fmt.Println("Baidu voice errno :", bdResp.Err_No, ", errmsg :", bdResp.Err_Msg)
 
-	/*
-		//	result := PostHttpRequestWithBody(BAIDU_VOICE_ADDRESS, BAIDU_VOICE_API, params, "audio/amr;rate=16000", bytes.NewBuffer(body), false)
-		result := PostHttpRequestWithBody(BAIDU_VOICE_ADDRESS, BAIDU_VOICE_API, params, "application/json", bytes.NewBuffer(body), false)
-		var resp BaiduVoiceResponse
-		resp.ParseJson(result)
-		fmt.Println(string(result))
-		//	_ = PostHttpRequestWithBody(BAIDU_VOICE_ADDRESS, BAIDU_VOICE_API, params, "application/json", bytes.NewBuffer(body), false)
-	*/
+	return string("")
 }
 
 func BaiduVoiceHttpRequest(reqMsg *WeixinMsg) string {
@@ -125,15 +118,10 @@ func BaiduVoiceHttpRequest(reqMsg *WeixinMsg) string {
 	req.Vdata.Speech = voiceStr
 	req.Vdata.Len = len(voiceData)
 
-	fmt.Println("weixin access token :", ACCESS_TOKEN)
-	fmt.Println("weixin media id :", reqMsg.MediaId)
-	fmt.Println("voice data :", req.Vdata.Speech)
-	fmt.Println("voice data len :", req.Vdata.Len)
-	//	fmt.Println("callback url :", BAIDU_CALLBACK_URL)
+	fmt.Println("baidu voice use weixin access token :", ACCESS_TOKEN)
+	fmt.Println("baidu voice use weixin media id :", reqMsg.MediaId)
 
 	return DoBaiduVoice(req)
-
-	//	BDVoiceQueue.Add(reqMsg)
 }
 
 var BDVoiceQueue *VoiceQueue = NewVoiceQueue()

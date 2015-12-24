@@ -16,9 +16,9 @@ func (*Baidu) GetCallback(ctx *jas.Context) {
 		return
 	}
 	ctx.Body.Close()
-	b := DecodeJson(resJson)
+	//	b := DecodeJson(resJson)
 	resp := &BaiduVoiceResponse{}
-	resp.ParseJson(b)
+	resp.ParseJson(resJson)
 
 	msg := BDVoiceQueue.GetAndDelete()
 	if msg == nil || resp.Err_No != 0 {

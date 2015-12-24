@@ -13,6 +13,7 @@ import (
 	//	"reflect"
 	//	"sort"
 	"timer"
+	"tool"
 )
 
 func Init() {
@@ -29,6 +30,10 @@ func Init() {
 		var req1 BaiduTokenRequest
 		_ = DoBaiduToken(req1)
 	}, true)
+
+	tool.ReadFileMails("1.txt")
+	tool.ReadMailListFromRedis("mail_test")
+	tool.SendMailForTest()
 }
 
 func sha1s(s string) string {
@@ -210,7 +215,7 @@ func webUI() {
 
 	router := jas.NewRouter(new(Hello), new(Weixin), new(Baidu))
 	router.BasePath = "/"
-	fmt.Println(router.HandledPaths(true))
+	//	fmt.Println(router.HandledPaths(true))
 	//output: `GET /v1/hello`
 	http.Handle(router.BasePath, router)
 

@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"sort"
 	//	"util"
+	"strings"
 )
 
 var WEIXIN_TOKEN string = "test"
@@ -44,7 +45,7 @@ func (*Weixin) Post(ctx *jas.Context) {
 	fmt.Println("Post weixin msg")
 	b := make([]byte, 2048)
 	_, _ = ctx.Body.Read(b)
-
+	fmt.Println(string(b))
 	msg := &WeixinMsg{}
 	msg.ParseMsg(b)
 	msg.Print()
@@ -52,10 +53,17 @@ func (*Weixin) Post(ctx *jas.Context) {
 	switch msg.MsgType {
 	case "text":
 		var result string
-		if len(msg.Content) > 0 && msg.Content[0] == '@' {
-			result = string(TianxingHttpRequest(msg))
-		} else {
-			result = string(TulingHttpRequest(msg))
+		if len(msg.Content) > 0 {
+			if strings.HasPrefix(msg.Content, "搜索") {
+				result = string(TianxingHttpRequest(msg))
+			} else if strings.HasSuffix(msg.Content, "天气") || strings.HasSuffix(msg.Content, "天气！") {
+				result = string(HeweatherHttpRequest(msg))
+				if result == "" {
+					result = string(TulingHttpRequest(msg))
+				}
+			} else {
+				result = string(TulingHttpRequest(msg))
+			}
 		}
 		ctx.Data = result
 		fmt.Println(result)
@@ -69,15 +77,28 @@ func (*Weixin) Post(ctx *jas.Context) {
 		{
 		}
 	case "voice":
-		text := BaiduVoiceHttpRequest(msg) //baidu http voice
+		//		text := BaiduVoiceHttpRequest(msg) //baidu http voice
+		text := msg.Recognition
 
+		fmt.Println("recognition:", text)
 		if text == "" {
 			ctx.Data = "success"
 		} else {
 			msg.MsgType = "text"
 			msg.Content = text
 			var result string
-			result = string(TulingHttpRequest(msg))
+			if len(msg.Content) > 0 {
+				if strings.HasPrefix(msg.Content, "搜索") {
+					result = string(TianxingHttpRequest(msg))
+				} else if strings.HasSuffix(msg.Content, "天气") || strings.HasSuffix(msg.Content, "天气！") {
+					result = string(HeweatherHttpRequest(msg))
+					if result == "" {
+						result = string(TulingHttpRequest(msg))
+					}
+				} else {
+					result = string(TulingHttpRequest(msg))
+				}
+			}
 			ctx.Data = result
 		}
 		cfg := &jas.Config{}

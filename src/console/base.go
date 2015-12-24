@@ -49,7 +49,6 @@ func RestGet(bufUrl *bytes.Buffer) []byte {
 		fmt.Println("rest get error : ", err)
 		return bErr
 	}
-	fmt.Println(res.Header)
 	resJson, err := ioutil.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
@@ -57,7 +56,6 @@ func RestGet(bufUrl *bytes.Buffer) []byte {
 		fmt.Println("rest read get body error : ", err)
 		return bErr
 	}
-	//        fmt.Printf("%s\r\n", resJson)
 	return resJson
 }
 
@@ -75,7 +73,6 @@ func RestPost(bufUrl *bytes.Buffer, data url.Values) []byte {
 		fmt.Println("rest read post body error : ", err)
 		return bErr
 	}
-	//        fmt.Printf("%s\r\n", resJson)
 	return resJson
 }
 
@@ -174,6 +171,7 @@ func ParseObjectJson(objJson []byte) map[string]string {
 }
 
 func DecodeJson(objJson []byte) []byte {
+	fmt.Println("before decode :", string(objJson))
 	oj, err := url.QueryUnescape(string(objJson))
 	if err != nil {
 		fmt.Println("decode string error : ", err)

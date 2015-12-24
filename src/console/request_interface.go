@@ -74,11 +74,11 @@ func SendHttpRequest(gameAddress string, inf string, method string, req string, 
 	fmt.Println("url:", bUrl.String())
 	if method == "GET" {
 		resJson := RestGet(&bUrl)
-		return DecodeJson(resJson)
+		return resJson //DecodeJson(resJson)
 	} else if method == "POST" {
 		var v url.Values
 		resJson := RestPost(&bUrl, v)
-		return DecodeJson(resJson)
+		return resJson //DecodeJson(resJson)
 	} else {
 		fmt.Println("Invalid http request method! method:", method)
 		var result []byte
@@ -88,7 +88,7 @@ func SendHttpRequest(gameAddress string, inf string, method string, req string, 
 
 func SendHttpRequestNotJson(gameAddress string, inf string, method string, req string, https bool) []byte {
 	bUrl := GetUrl(gameAddress, inf, req, https)
-	fmt.Println("url:", bUrl.String())
+	fmt.Println("url(result not json):", bUrl.String())
 	if method == "GET" {
 		return RestGet(&bUrl)
 	} else if method == "POST" {
@@ -103,8 +103,6 @@ func SendHttpRequestNotJson(gameAddress string, inf string, method string, req s
 
 func PostHttpRequestWithBody(gameAddress string, inf string, req string, bodyType string, body io.Reader, https bool) []byte {
 	bUrl := GetUrl(gameAddress, inf, req, https)
-	fmt.Println("url with body:", bUrl.String())
 	resJson := RestPostWithBody(&bUrl, bodyType, body)
-	fmt.Println("url with body res json:", string(resJson))
-	return DecodeJson(resJson)
+	return resJson //DecodeJson(resJson)
 }
