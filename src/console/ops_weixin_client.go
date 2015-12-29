@@ -35,5 +35,3 @@ func DoLoadMedia(req WeixinMediaLoadRequest) []byte {
 	params := req.ToRequest()
 	return SendHttpRequestNotJson(FILE_ADDRESS, WEIXIN_LOAD_MEDIA, "GET", params, false)
 }
-
-//func DoCustomMessage(req

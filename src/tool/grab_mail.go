@@ -2,21 +2,17 @@ package tool
 
 import (
 	"driver"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"regexp"
+	"strings"
 )
 
 const (
 	regular_mail = "([0-9]|[a-z]){6,15}@([a-z]|[0-9]){2,5}.com"
 )
 
-/*
-func FindAll(reg *regexp.Regexp, src string) []byte {
-	reg := regexp.MustCompile(regular)
-	return reg.FindAllString(src, -1)
-}
-*/
 var MailRegex *regexp.Regexp = regexp.MustCompile(regular_mail)
 
 func PushSingleMailToRedis(mailAdr string, tableKey string) {
@@ -56,12 +52,43 @@ func PushMultiMailsToRedis(mails []string, tableKey string) {
 	}
 }
 
-func ReadFileMails(filename string) {
+func ReadFileMails(filename string, tablekey string) ([]string, error) {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println("Invalid file ! filename :", filename)
-		return
+		return []string{}, errors.New("Invalid file")
 	}
 	mailAry := MailRegex.FindAllString(string(content), -1)
-	PushMultiMailsToRedis(mailAry, "mail_set")
+	if len(mailAry) <= 0 {
+		return []string{}, errors.New("Filename not get any mails")
+	}
+	PushMultiMailsToRedis(mailAry, tablekey)
+	return mailAry, nil
+}
+
+var SMTP_163_ADDRESS string = "smtp.163.com:25"
+
+func ReadFileSendMail(filename string, tablekey string) {
+	defer func() {
+		msg := recover()
+		if msg != nil {
+			panic(msg)
+		}
+	}()
+	conn := driver.RedisPool.Get()
+	defer conn.Close()
+
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println("Invalid file")
+		return
+	}
+
+	lines := strings.Split(string(content), "\n")
+	for _, v := range lines {
+		mails := strings.Split(v, "----")
+		if len(mails) != 2 {
+			continue
+		}
+		_, _ = conn.Do("hset", REDIS_SEND_MAIL_CONFIG_TABLE, mails[0], mails[1]+";"+SMTP_163_ADDRESS)
+	}
 }
