@@ -22,4 +22,4 @@ func newPostgres() *sql.DB {
 	return db
 }
 
-var PGPool *sql.DB = newPostgres()
+var PGPool *sql.DB //= newPostgres()

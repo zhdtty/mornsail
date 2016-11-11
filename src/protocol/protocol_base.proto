@@ -1,0 +1,139 @@
+package protocol;
+option optimize_for = SPEED;
+
+enum ProtocolType {
+     S_2_C_KEEP_ALIVE_ACK = 4;
+
+     S_2_C_GATE_STATE         = 100;
+
+     //login
+     C_2_S_LOGIN_BASE         = 101;
+     C_2_S_LOGIN_TOP          = 200;
+
+     //role
+     C_2_S_ROLE_BASE          = 201;
+     C_2_S_ROLE_TOP           = 250;
+
+     //gm or test
+     C_2_S_TEST_BASE          = 251;
+     C_2_S_TEST_TOP           = 300;
+
+     //hero
+     C_2_S_HERO_BASE          = 301;
+     C_2_S_HERO_TOP           = 400;
+
+     //item
+     C_2_S_ITEM_BASE          = 401;
+     C_2_S_ITEM_TOP           = 500;
+
+     //material
+     C_2_S_MATERIAL_BASE      = 501;
+     C_2_S_MATERIAL_TOP       = 600;
+
+     //formation
+     C_2_S_FORMATION_BASE     = 601;
+     C_2_S_FORMATION_TOP      = 700;
+
+     //tactic
+     C_2_S_TACTIC_BASE        = 701;
+     C_2_S_TACTIC_TOP         = 800;
+
+     //mail
+     C_2_S_MAIL_BASE          = 801;
+     C_2_S_MAIL_TOP           = 900;
+
+     //instance
+     C_2_S_INSTANCE_BASE      = 901;
+     C_2_S_INSTANCE_TOP       = 1000;
+
+     //rank
+     C_2_S_RANK_BASE          = 1001;
+     C_2_S_RANK_TOP           = 1100;
+
+     //tower
+     C_2_S_TOWER_BASE         = 1101;
+     C_2_S_TOWER_TOP          = 1200;
+
+     //shop
+     C_2_S_SHOP_BASE          = 1201;
+     C_2_S_SHOP_TOP           = 1300;
+
+     //task
+     C_2_S_TASK_BASE          = 1301;
+     C_2_S_TASK_TOP           = 1400;
+
+     //chat
+     C_2_S_CHAT_BASE          = 1401;
+     C_2_S_CHAT_TOP           = 1500;
+
+     //buddy
+     C_2_S_BUDDY_BASE         = 1501;
+     C_2_S_BUDDY_TOP          = 1600;
+
+     //clone
+     C_2_S_CLONE_BASE         = 1601;
+     C_2_S_CLONE_TOP          = 1700;
+
+     //standard
+     C_2_S_STANDARD_BASE      = 1701;
+     C_2_S_STANDARD_TOP       = 1800;
+
+     //arena
+     C_2_S_ARENA_BASE         = 1801;
+     C_2_S_ARENA_TOP          = 1900;
+
+     //crop
+     C_2_S_CROP_BASE          = 1901;
+     C_2_S_CROP_TOP           = 2000;
+
+     //champion race
+     C_2_S_CHAMPION_RACE_BASE = 2001;
+     C_2_S_CHAMPION_RACE_TOP  = 2100;
+
+     //crop war
+     C_2_S_CROP_WAR_BASE      = 2101;
+     C_2_S_CROP_WAR_TOP       = 2200;
+
+     //main
+     C_2_S_MAIN_BASE          = 2201;
+     C_2_S_MAIN_TOP           = 2300;
+
+     //reward activity
+     C_2_S_REWARD_ACTIVITY_BASE = 2301;
+     C_2_S_REWARD_ACTIVITY_TOP  = 2400;
+}
+
+message C2S_SystemTick {
+        optional ProtocolType type = 1 [default = S_2_C_KEEP_ALIVE_ACK];
+        required int32 keep_alive_ack = 2;
+}
+
+message S2C_GateState {
+        enum StateType {
+             state_ok = 0;
+             state_gs_offline = 1;
+             state_server_is_full = 2;
+        };
+        optional ProtocolType type = 1 [default = S_2_C_GATE_STATE];
+        required int32 state = 2;
+        required int64 key = 3;
+}
+
+message PlayerInfo {
+        optional int64 id = 1;
+        optional string name = 2;
+        optional int32 head = 3;
+        optional int32 level = 4;
+        optional int32 vip_lvl = 5;
+}
+
+message Attribute {
+        optional int32 id = 1;
+        optional double val = 2;
+}
+
+message Reward {
+        required int32 type = 1;
+        required int32 value = 2;
+        required int32 nums = 3;
+}

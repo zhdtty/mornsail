@@ -1,9 +1,6 @@
-package servlet
+package logic
 
 import (
-	//"fmt"
-	"protocol"
-	//	"server/server"
 	"database/sql"
 	"driver"
 	_ "github.com/garyburd/redigo/redis"
@@ -11,6 +8,7 @@ import (
 	"golog"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"protocol"
 )
 
 func init() {
@@ -182,7 +180,7 @@ func AccessMongo(session *mgo.Session, loginId string) {
 	//	}
 }
 
-func (servlet *AccountLogin) DoRequest(session *PlayerSession, pack *protocol.Packet) bool {
+func (servlet *AccountLogin) DoRequest(ps *PlayerSession, pack *protocol.Packet) bool {
 	packData := pack.Data.(*protocol.C2SLogin)
 
 	golog.Debug("AccountLogin", "DoRequest", "Test login", "loginId", packData.LoginId, "ts", packData.Ts)
@@ -197,6 +195,6 @@ func (servlet *AccountLogin) DoRequest(session *PlayerSession, pack *protocol.Pa
 	AccessRedis(packData.LoginId, packData.Ts)
 	//      golog.Info("AccountLogin", "DoRequest", "Access redis over", "loginId", packData.LoginId, "ts", packData.Ts, "cnt", rediscount)
 
-	session.SendData([]byte("from account login"))
+	ps.SendData([]byte("from account login"))
 	return true
 }

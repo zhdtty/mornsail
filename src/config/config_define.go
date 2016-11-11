@@ -5,7 +5,7 @@ import (
 )
 
 var FLAG_CONFIG_FILE = flag.String(
-	"config_file", "/root/workspace/mornsail/src/config/flag.config", "Config file to read flags from.")
+	"config_file", "/Users/zhanghaidong/mytest/mornsail/src/config/flag.config", "Config file to read flags from.")
 var FLAG_ADDR = flag.String(
 	"ip_eth0", ":6666", "Config file to read flags from.")
 var FLAG_REDIS_ADDR = flag.String(
@@ -13,11 +13,12 @@ var FLAG_REDIS_ADDR = flag.String(
 var FLAG_REDIS_PASSWD = flag.String(
 	"redis_passwd", "", "Redis password")
 var FLAG_POSTGRES_DRIVER = flag.String(
-        "postgres_driver", "", "postgres driver name")
+	"postgres_driver", "", "postgres driver name")
 var FLAG_POSTGRES_SOURCE = flag.String(
-        "postgres_source", "", "postgres source")
+	"postgres_source", "", "postgres source")
 var FLAG_MONGO_ADDR = flag.String(
-        "mongo_addr", "", "Mongo address")
+	"mongo_addr", "", "Mongo address")
+
 /*
 var FLAG_POSTGRES_DRIVER = flag.String(
 	"postgres_driver", "postgres", "postgres driver name")

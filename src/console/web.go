@@ -29,6 +29,7 @@ var SEND_MAIL_MIN_NUMS int = 10
 var SEND_MAIL_MAX_NUMS int = 10000
 
 func Init() {
+
 	fmt.Println("console init")
 	go webUI()
 

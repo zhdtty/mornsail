@@ -1,7 +1,6 @@
 package driver
 
 import (
-	"config"
 	"github.com/garyburd/redigo/redis"
 	"time"
 )
@@ -34,4 +33,4 @@ func newPool(server, password string) *redis.Pool {
 	}
 }
 
-var RedisPool *redis.Pool = newPool(*config.FLAG_REDIS_ADDR, *config.FLAG_REDIS_PASSWD)
+var RedisPool *redis.Pool //= newPool(*config.FLAG_REDIS_ADDR, *config.FLAG_REDIS_PASSWD)

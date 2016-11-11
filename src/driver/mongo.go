@@ -20,4 +20,4 @@ func newMongo() *mgo.Session {
 	return session
 }
 
-var Mgo *mgo.Session = newMongo()
+var Mgo *mgo.Session // = newMongo()

@@ -37,7 +37,7 @@ func (*Weixin) Get(ctx *jas.Context) {
 			len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
 			return len
 		}
-		ctx.SetConfig(cfg)
+		//		ctx.SetConfig(cfg)
 	}
 }
 
@@ -72,7 +72,7 @@ func (*Weixin) Post(ctx *jas.Context) {
 			len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
 			return len
 		}
-		ctx.SetConfig(cfg)
+		//		ctx.SetConfig(cfg)
 	case "image":
 		{
 		}
@@ -106,7 +106,7 @@ func (*Weixin) Post(ctx *jas.Context) {
 			len, _ := writer.Write([]byte(reflect.ValueOf(ctx.Data).String()))
 			return len
 		}
-		ctx.SetConfig(cfg)
+		//		ctx.SetConfig(cfg)
 	case "video":
 		{
 		}

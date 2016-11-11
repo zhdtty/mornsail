@@ -6,7 +6,7 @@ import (
 )
 
 type WeixinMsgTextResponse struct {
-	XMLName         xml.Name `xml:"xml"`
+	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
 	CreateTime   int
@@ -15,7 +15,7 @@ type WeixinMsgTextResponse struct {
 }
 
 type WeixinMsgImageResponse struct {
-	XMLName         xml.Name `xml:"xml"`
+	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
 	CreateTime   int
@@ -24,7 +24,7 @@ type WeixinMsgImageResponse struct {
 }
 
 type WeixinMsgVoiceResponse struct {
-	XMLName         xml.Name `xml:"xml"`
+	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
 	CreateTime   int
@@ -33,7 +33,7 @@ type WeixinMsgVoiceResponse struct {
 }
 
 type WeixinMsgVideoResponse struct {
-	XMLName         xml.Name `xml:"xml"`
+	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
 	CreateTime   int
@@ -45,7 +45,7 @@ type WeixinMsgVideoResponse struct {
 }
 
 type WeixinMsgMusicResponse struct {
-	XMLName         xml.Name `xml:"xml"`
+	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
 	CreateTime   int
@@ -66,7 +66,7 @@ type WeixinNews struct {
 }
 
 type WeixinMsgNewsResponse struct {
-	XMLName         xml.Name `xml:"xml"`
+	XMLName      xml.Name `xml:"xml"`
 	ToUserName   string
 	FromUserName string
 	CreateTime   int

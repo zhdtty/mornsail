@@ -2,14 +2,15 @@ package main
 
 import (
 	"config"
-	"console"
+	//"console"
 	//"flag"
 	//	"glog"
 	"golog"
 	//"path"
+	//"fmt"
 	"os"
 	"os/signal"
-	"servlet"
+	//"servlet"
 	"syscall"
 	//"time"
 	//"timer"
@@ -17,13 +18,12 @@ import (
 
 func main() {
 	//	flag.Parse()
-	console.Init()
+	//console.Init()
 	config.Parse()
+	golog.SetLevel(golog.LevelDebug)
 
-	srvModule := NewServer("Player Server", *config.FLAG_ADDR, 10000000, servlet.G_dispatcher)
+	srvModule := NewServer()
 	srvModule.Start()
-
-	//golog.SetLevel(golog.LevelDebug)
 	golog.Info("main", "main", "Starting server", "addr", *config.FLAG_ADDR)
 
 	c := make(chan os.Signal, 1)

@@ -1,4 +1,4 @@
-package servlet
+package logic
 
 import (
 	"golog"
@@ -14,6 +14,7 @@ type Dispatcher struct {
 }
 
 func NewDispatch() *Dispatcher {
+	golog.Info("Init", "Init", "-------init socket dispatcher")
 	disp := &Dispatcher{
 		register: make(map[int32]IServlet),
 	}
@@ -24,7 +25,7 @@ func (disp *Dispatcher) Register(cmd int32, servlet IServlet) {
 	disp.register[cmd] = servlet
 }
 
-func (disp *Dispatcher) Dispatch(session *PlayerSession, pack *protocol.Packet) bool {
+func (disp *Dispatcher) Dispatch(s *PlayerSession, pack *protocol.Packet) bool {
 	defer func() {
 		msg := recover()
 		if msg != nil {
@@ -33,7 +34,7 @@ func (disp *Dispatcher) Dispatch(session *PlayerSession, pack *protocol.Packet) 
 		}
 	}()
 	if servlet, ok := disp.register[pack.Cmd]; ok {
-		return servlet.DoRequest(session, pack)
+		return servlet.DoRequest(s, pack)
 	}
 	return false
 }
